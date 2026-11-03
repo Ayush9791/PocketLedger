@@ -26,6 +26,7 @@
     "expo-font": "~14.0.12"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.2"
+    "@babel/core": "^7.25.2",
+    "babel-preset-expo": "~54.0.12"
   }
 }
