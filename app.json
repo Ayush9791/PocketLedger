@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "PocketLedger",
+    "slug": "pocket-ledger",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "splash": { "backgroundColor": "#090D14" },
+    "android": {
+      "package": "com.pocketledger.finance",
+      "versionCode": 1,
+      "permissions": ["READ_SMS"],
+      "allowBackup": false
+    },
+    "plugins": [
+      ["expo-sqlite", { "useSQLCipher": true }],
+      "expo-document-picker",
+      "expo-secure-store"
+    ]
+  }
+}
