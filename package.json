@@ -22,7 +22,8 @@
     "expo-secure-store": "~15.0.8",
     "expo-crypto": "~15.0.9",
     "expo-modules-core": "~3.0.30",
-    "pocketledger-sms-inbox": "file:modules/sms-inbox"
+    "pocketledger-sms-inbox": "file:modules/sms-inbox",
+    "expo-font": "~14.0.12"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2"
