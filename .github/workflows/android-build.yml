@@ -19,6 +19,8 @@ jobs:
           java-version: '17'
         id: java
       - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools'
       - name: Install Android SDK packages
         run: sdkmanager 'platform-tools' 'platforms;android-36' 'build-tools;36.0.0'
       - name: Install JavaScript dependencies
