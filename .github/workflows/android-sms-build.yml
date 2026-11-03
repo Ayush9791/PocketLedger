@@ -1,6 +1,12 @@
 name: Build signed PocketLedger SMS APK (artifact only)
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/android-sms-build.yml'
+      - 'App.sms.js'
+      - 'modules/sms-inbox/**'
 permissions:
   contents: read
 jobs:
