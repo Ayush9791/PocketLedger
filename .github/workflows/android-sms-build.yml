@@ -1,16 +1,17 @@
-name: Build signed PocketLedger SMS APK (artifact only)
+name: Build signed PocketLedger SMS-import APK (no inbox permission)
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
       - '.github/workflows/android-sms-build.yml'
-      - 'App.sms.js'
-      - 'modules/sms-inbox/**'
+      - 'App.js'
+      - 'src/import/smsPaste.js'
+      - 'src/import/smsParser.js'
 permissions:
   contents: read
 jobs:
-  build-sms-apk:
+  build-sms-import-apk:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,20 +27,6 @@ jobs:
           packages: 'platform-tools'
       - name: Install Android SDK packages
         run: sdkmanager 'platform-tools' 'platforms;android-36' 'build-tools;36.0.0'
-      - name: Configure SMS app variant
-        run: |
-          cp App.sms.js App.js
-          node <<'NODE'
-          const fs = require('fs');
-          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-          pkg.dependencies['pocketledger-sms-inbox'] = 'file:modules/sms-inbox';
-          fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-          const app = JSON.parse(fs.readFileSync('app.json', 'utf8'));
-          app.expo.name = 'PocketLedger SMS';
-          app.expo.android.package = 'com.pocketledger.finance.sms';
-          app.expo.android.permissions = ['READ_SMS'];
-          fs.writeFileSync('app.json', JSON.stringify(app, null, 2) + '\n');
-          NODE
       - name: Install JavaScript dependencies
         run: npm install --no-audit --no-fund
       - name: Generate Android project
@@ -59,24 +46,24 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: node scripts/configure-signing.js
-      - name: Build signed SMS release APK
+      - name: Build signed private SMS-import APK
         env:
           ANDROID_KEYSTORE_FILE: pocketledger-release.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: cd android && ./gradlew --no-daemon assembleRelease
-      - name: Verify APK signature and SMS permission
+      - name: Verify signature and absence of restricted SMS permissions
         run: |
           APK=android/app/build/outputs/apk/release/app-release.apk
           test -s "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/aapt" dump permissions "$APK" | tee /tmp/apk-permissions.txt
-          grep -q 'android.permission.READ_SMS' /tmp/apk-permissions.txt
-      - name: Upload signed SMS APK
+          if grep -Eq 'android.permission.(READ_SMS|RECEIVE_SMS|RECEIVE_MMS|SEND_SMS)' /tmp/apk-permissions.txt; then echo 'Restricted SMS permission found'; exit 1; fi
+      - name: Upload signed private SMS-import APK
         uses: actions/upload-artifact@v4
         with:
-          name: PocketLedger-v0.1.0-sms-apk
+          name: PocketLedger-v0.1.0-private-sms-import-apk
           path: android/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
           retention-days: 14
