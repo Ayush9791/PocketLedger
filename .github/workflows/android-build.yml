@@ -1,4 +1,4 @@
-name: Build signed PocketLedger APK (artifact only)
+name: Build signed PocketLedger standard APK (artifact only)
 on:
   push:
     branches: [main]
@@ -63,10 +63,13 @@ jobs:
           APKSIGNER="$ANDROID_HOME/build-tools/36.0.0/apksigner"
           test -x "$APKSIGNER"
           "$APKSIGNER" verify --verbose "$APK"
+          AAPT="$ANDROID_HOME/build-tools/36.0.0/aapt"
+          "$AAPT" dump permissions "$APK" | tee /tmp/apk-permissions.txt
+          if grep -q "android.permission.READ_SMS" /tmp/apk-permissions.txt; then echo "Unexpected READ_SMS permission in standard APK"; exit 1; fi
       - name: Upload signed APK for inspection
         uses: actions/upload-artifact@v4
         with:
-          name: PocketLedger-v0.1.0-signed-apk
+          name: PocketLedger-v0.1.0-standard-apk
           path: android/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
           retention-days: 14
