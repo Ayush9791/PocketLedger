@@ -5,11 +5,6 @@
   "android": {
     "modules": [
       "expo.modules.smsinbox.SmsInboxModule"
-    ],
-    "publication": {
-      "groupId": "expo.modules.smsinbox",
-      "artifactId": "pocketledger-sms-inbox",
-      "version": "0.1.0"
-    }
+    ]
   }
 }
