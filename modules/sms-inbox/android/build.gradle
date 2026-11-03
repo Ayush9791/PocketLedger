@@ -7,7 +7,6 @@ def expoModulesCorePlugin = new File(project(':expo-modules-core').projectDir.ab
 apply from: expoModulesCorePlugin
 applyKotlinExpoModulesCorePlugin()
 useCoreDependencies()
-useExpoPublishing()
 
 def useManagedAndroidSdkVersions = false
 if (useManagedAndroidSdkVersions) {
